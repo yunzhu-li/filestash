@@ -467,17 +467,19 @@ func OnlyOfficeEventHandler(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
+		Log.Info("event: #v", event)
 		r, err := http.NewRequest("GET", event.Url, nil)
 		if err != nil {
+			Log.Warning("http.NewRequest: %v", err)
 			res.WriteHeader(http.StatusInternalServerError)
 			res.Write([]byte(`{"error": 1, "message": "couldn't create http.Request for fetching document from oods server"}`))
 			return
 		}
 		f, err := HTTPClient.Do(r)
 		if err != nil {
+			Log.Warning("HTTPClient.Do: %v", err)
 			res.WriteHeader(http.StatusInternalServerError)
 			res.Write([]byte(`{"error": 1, "message": "couldn't fetch the document on the oods server"}`))
-			Log.Warning("HTTPClient.Do: %v", err)
 		}
 		if err = cData.Save(cData.Path, f.Body); err != nil {
 			res.WriteHeader(http.StatusInternalServerError)

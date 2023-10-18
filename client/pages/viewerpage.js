@@ -162,9 +162,7 @@ export function ViewerPageComponent({ error, subscribe, unsubscribe, match, loca
                             path={path} />
                     </NgIf>
                     <NgIf cond={state.opener === "pdf"}>
-                        <PDFViewer
-                            data={state.url}
-                            filename={filename} />
+                        <FileDownloader data={state.url} filename={filename} />
                     </NgIf>
                     <NgIf cond={state.opener === "video"}>
                         <VideoPlayer
