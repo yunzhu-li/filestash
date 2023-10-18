@@ -3,12 +3,6 @@ package plg_editor_onlyoffice
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	. "github.com/mickael-kerjean/filestash/server/common"
-	"github.com/mickael-kerjean/filestash/server/ctrl"
-	. "github.com/mickael-kerjean/filestash/server/middleware"
-	"github.com/mickael-kerjean/filestash/server/model"
-	"github.com/patrickmn/go-cache"
 	"io"
 	"net"
 	"net/http"
@@ -18,6 +12,13 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
+	. "github.com/mickael-kerjean/filestash/server/common"
+	"github.com/mickael-kerjean/filestash/server/ctrl"
+	. "github.com/mickael-kerjean/filestash/server/middleware"
+	"github.com/mickael-kerjean/filestash/server/model"
+	"github.com/patrickmn/go-cache"
 )
 
 var (
@@ -469,10 +470,15 @@ func OnlyOfficeEventHandler(res http.ResponseWriter, req *http.Request) {
 		r, err := http.NewRequest("GET", event.Url, nil)
 		if err != nil {
 			res.WriteHeader(http.StatusInternalServerError)
-			res.Write([]byte(`{"error": 1, "message": "couldn't fetch the document on the oods server"}`))
+			res.Write([]byte(`{"error": 1, "message": "couldn't create http.Request for fetching document from oods server"}`))
 			return
 		}
 		f, err := HTTPClient.Do(r)
+		if err != nil {
+			res.WriteHeader(http.StatusInternalServerError)
+			res.Write([]byte(`{"error": 1, "message": "couldn't fetch the document on the oods server"}`))
+			Log.Warning("HTTPClient.Do: %v", err)
+		}
 		if err = cData.Save(cData.Path, f.Body); err != nil {
 			res.WriteHeader(http.StatusInternalServerError)
 			res.Write([]byte(`{"error": 1, "message": "error while saving the document"}`))
