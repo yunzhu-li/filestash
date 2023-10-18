@@ -10,6 +10,7 @@ body:not(.dark-mode) .component_pdfviewer .pdfviewer_container {
     flex-grow: 1;
 
     .pdfviewer_container {
+        display: flex;
         text-align: center;
         height: 100%;
         width: 100%;

@@ -15,13 +15,7 @@ export function PDFViewer({ filename, data }) {
         <div className="component_pdfviewer">
             <MenuBar title={filename} download={data} />
             <div className="pdfviewer_container">
-                {
-                    "application/pdf" in navigator.mimeTypes ? (
-                        <PDFEmbedViewer src={data} />
-                    ) : (
-                        <PDFJSViewer src={data} />
-                    )
-                }
+                <iframe src={data} style={{ flex: 1 }} />
             </div>
         </div>
     );

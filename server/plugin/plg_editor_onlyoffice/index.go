@@ -3,12 +3,6 @@ package plg_editor_onlyoffice
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	. "github.com/mickael-kerjean/filestash/server/common"
-	"github.com/mickael-kerjean/filestash/server/ctrl"
-	. "github.com/mickael-kerjean/filestash/server/middleware"
-	"github.com/mickael-kerjean/filestash/server/model"
-	"github.com/patrickmn/go-cache"
 	"io"
 	"net"
 	"net/http"
@@ -18,6 +12,13 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
+	. "github.com/mickael-kerjean/filestash/server/common"
+	"github.com/mickael-kerjean/filestash/server/ctrl"
+	. "github.com/mickael-kerjean/filestash/server/middleware"
+	"github.com/mickael-kerjean/filestash/server/model"
+	"github.com/patrickmn/go-cache"
 )
 
 var (
@@ -437,6 +438,18 @@ func OnlyOfficeEventHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	req.Body.Close()
+
+	fsHost := Config.Get("general.host").String()
+	fsPort := Config.Get("general.port").Int()
+	event.Url = strings.ReplaceAll(
+		event.Url,
+		fmt.Sprintf("https://%s", fsHost),
+		fmt.Sprintf("http://filestash:%d", fsPort),
+	)
+	event.ChangesURL = strings.ReplaceAll(event.Url,
+		fmt.Sprintf("https://%s", fsHost),
+		fmt.Sprintf("http://filestash:%d", fsPort),
+	)
 
 	switch event.Status {
 	case 0:
